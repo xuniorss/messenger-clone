@@ -7,6 +7,8 @@ import { useForm, FieldValues, SubmitHandler } from 'react-hook-form'
 import { AuthSocialButton } from '../AuthSocialButton'
 import { BsGithub, BsGoogle } from 'react-icons/bs'
 import axios from 'axios'
+import { toast } from 'react-hot-toast'
+import { signIn } from 'next-auth/react'
 
 type Variant = 'LOGIN' | 'REGISTER'
 
@@ -33,11 +35,20 @@ export const AuthForm = () => {
          setIsLoading(true)
 
          if (variant === 'REGISTER') {
-            axios.post('/api/register', data)
+            axios
+               .post('/api/register', data)
+               .catch(() => toast.error('Alguma coisa deu errado.'))
+               .finally(() => setIsLoading(false))
          }
 
          if (variant === 'LOGIN') {
-            // NextAuth SignIn
+            signIn('credentials', { ...data, redirect: false })
+               .then((callback) => {
+                  if (callback?.error) return toast.error('Invalid credentials')
+                  if (callback?.ok && !callback?.error)
+                     return toast.success('Logado')
+               })
+               .finally(() => setIsLoading(false))
          }
       },
       [variant]
@@ -46,7 +57,12 @@ export const AuthForm = () => {
    const socialAction = useCallback((action: 'github' | 'google') => {
       setIsLoading(true)
 
-      // NextAuth Social SignIn
+      signIn(action, { redirect: false })
+         .then((callback) => {
+            if (callback?.error) return toast.error('Invalid credentials')
+            if (callback?.ok && !callback?.error) return toast.success('Logado')
+         })
+         .finally(() => setIsLoading(false))
    }, [])
 
    return (
