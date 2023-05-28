@@ -1,21 +1,20 @@
-import getUser from '@/actions/getUsers'
+import getConversations from '@/actions/getConversations'
 import { Sidebar } from '@/components/Sidebar'
 import { ReactNode } from 'react'
+import { ConversationList } from './components/ConversationList'
 
-import { UserList } from './components/UserList'
-
-export default async function UsersLayout({
+export default async function ConversationsLayout({
    children,
 }: {
    children: ReactNode
 }) {
-   const users = await getUser()
+   const conversations = await getConversations()
 
    return (
       // @ts-expect-error Server Component
       <Sidebar>
          <div className="h-full">
-            <UserList items={users} />
+            <ConversationList initialItems={conversations} />
             {children}
          </div>
       </Sidebar>
