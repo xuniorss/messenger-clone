@@ -2,19 +2,28 @@
 
 import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
-import { useCallback, useState } from 'react'
+import { useCallback, useState, useEffect } from 'react'
 import { useForm, FieldValues, SubmitHandler } from 'react-hook-form'
 import { AuthSocialButton } from '../AuthSocialButton'
 import { BsGithub, BsGoogle } from 'react-icons/bs'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
-import { signIn } from 'next-auth/react'
+import { signIn, useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 
 type Variant = 'LOGIN' | 'REGISTER'
 
 export const AuthForm = () => {
    const [variant, setVariant] = useState<Variant>('LOGIN')
    const [isLoading, setIsLoading] = useState(false)
+   const session = useSession()
+   const router = useRouter()
+
+   useEffect(() => {
+      if (session?.status === 'authenticated') {
+         router.push('/users')
+      }
+   }, [router, session?.status])
 
    const toggleVariant = useCallback(() => {
       if (variant === 'LOGIN') return setVariant('REGISTER')
@@ -37,6 +46,7 @@ export const AuthForm = () => {
          if (variant === 'REGISTER') {
             axios
                .post('/api/register', data)
+               .then(() => signIn('credentials', data))
                .catch(() => toast.error('Alguma coisa deu errado.'))
                .finally(() => setIsLoading(false))
          }
@@ -45,13 +55,15 @@ export const AuthForm = () => {
             signIn('credentials', { ...data, redirect: false })
                .then((callback) => {
                   if (callback?.error) return toast.error('Invalid credentials')
-                  if (callback?.ok && !callback?.error)
-                     return toast.success('Logado')
+                  if (callback?.ok && !callback?.error) {
+                     toast.success('Logado')
+                     router.push('/users')
+                  }
                })
                .finally(() => setIsLoading(false))
          }
       },
-      [variant]
+      [variant, router]
    )
 
    const socialAction = useCallback((action: 'github' | 'google') => {

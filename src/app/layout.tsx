@@ -1,3 +1,4 @@
+import AuthContext from '@/context/AuthContext'
 import ToasterContext from '@/context/ToasterContext'
 import { Inter } from 'next/font/google'
 import { ReactNode } from 'react'
@@ -15,8 +16,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
    return (
       <html lang="pt-br">
          <body className={inter.className}>
-            <ToasterContext />
-            {children}
+            <AuthContext>
+               <ToasterContext />
+               {children}
+            </AuthContext>
          </body>
       </html>
    )
