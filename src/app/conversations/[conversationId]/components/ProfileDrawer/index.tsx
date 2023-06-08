@@ -1,6 +1,7 @@
 'use client'
 
 import { Avatar } from '@/components/Avatar'
+import { AvatarGroup } from '@/components/AvatarGroup'
 import useOtherUser from '@/hooks/useOtherUser'
 import { Dialog, Transition } from '@headlessui/react'
 import { Conversation, User } from '@prisma/client'
@@ -94,7 +95,9 @@ export const ProfileDrawer = ({
                                  <div className="relative mt-6 flex-1 px-4 sm:px-6">
                                     <div className="flex flex-col items-center">
                                        <div className="mb-2">
-                                          {/* {data.isGroup && <AvatarGroup users={data.users} /> } */}
+                                          {data.isGroup && (
+                                             <AvatarGroup users={data.users} />
+                                          )}
                                           {!data.isGroup && (
                                              <Avatar user={otherUser} />
                                           )}

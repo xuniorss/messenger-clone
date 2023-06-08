@@ -1,6 +1,7 @@
 'use client'
 
 import { Avatar } from '@/components/Avatar'
+import { AvatarGroup } from '@/components/AvatarGroup'
 import useOtherUser from '@/hooks/useOtherUser'
 import { FullConversationType } from '@/types'
 import clsx from 'clsx'
@@ -59,7 +60,9 @@ export const ConversationBox = ({ data, selected }: ConversationBoxProps) => {
             selected ? 'bg-neutral-100' : 'bg-white'
          )}
       >
-         <Avatar user={otherUser} />
+         {data.isGroup && <AvatarGroup users={data.users} />}
+
+         {!data.isGroup && <Avatar user={otherUser} />}
          <div className="min-w-0 flex-1">
             <div className="focus:outline-none">
                <div className="mb-1 flex items-center justify-between">
