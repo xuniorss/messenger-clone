@@ -2,6 +2,7 @@
 
 import { Avatar } from '@/components/Avatar'
 import { AvatarGroup } from '@/components/AvatarGroup'
+import useActiveList from '@/hooks/useActiveList'
 import useOtherUser from '@/hooks/useOtherUser'
 import { Conversation, User } from '@prisma/client'
 import Link from 'next/link'
@@ -16,11 +17,14 @@ interface HeaderProps {
 export const Header = ({ conversation }: HeaderProps) => {
    const otherUser = useOtherUser(conversation)
    const [drawerOpen, setDrawerOpen] = useState(false)
+   const { members } = useActiveList()
+
+   const isActive = members.indexOf(otherUser?.email!) !== -1
 
    const statusText = useMemo(() => {
       if (conversation.isGroup) return `${conversation.users.length} membros`
-      return 'Ativo'
-   }, [conversation.isGroup, conversation.users.length])
+      return isActive ? 'Online' : 'Offline'
+   }, [conversation.isGroup, conversation.users.length, isActive])
 
    return (
       <>

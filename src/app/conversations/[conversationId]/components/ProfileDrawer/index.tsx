@@ -2,6 +2,7 @@
 
 import { Avatar } from '@/components/Avatar'
 import { AvatarGroup } from '@/components/AvatarGroup'
+import useActiveList from '@/hooks/useActiveList'
 import useOtherUser from '@/hooks/useOtherUser'
 import { Dialog, Transition } from '@headlessui/react'
 import { Conversation, User } from '@prisma/client'
@@ -23,6 +24,9 @@ export const ProfileDrawer = ({
 }: ProfileDrawerProps) => {
    const otherUser = useOtherUser(data)
    const [confirmOpen, setConfirmOpen] = useState(false)
+   const { members } = useActiveList()
+
+   const isActive = members.indexOf(otherUser?.email!) !== -1
 
    const joinedDate = useMemo(
       () => format(new Date(otherUser.createdAt), 'PP'),
@@ -36,8 +40,8 @@ export const ProfileDrawer = ({
 
    const statusText = useMemo(() => {
       if (data.isGroup) return `${data.users.length} membros`
-      return 'Ativo'
-   }, [data.isGroup, data.users.length])
+      return isActive ? 'Online' : 'Offline'
+   }, [data.isGroup, data.users.length, isActive])
 
    return (
       <>
